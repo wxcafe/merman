@@ -17,12 +17,17 @@ if sys.argv[1] == '-h':
 
 # parse our arguments
 input_files = []
+output_file = []
 for file in sys.argv:
     if os.path.isfile(file):
         if zipfile.is_zipfile(file):
             input_files.append(file)
     else:
-        output_file = file
+        output_file.append(file)
+
+if not output_file:
+    print "The output file could not be found, most likely because it already exists"
+    sys.exit(1)
 
 # initialize variables
 index = 1
