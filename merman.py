@@ -53,6 +53,14 @@ for file in input_files:
         sys.exit(1)
     current_dir = sorted(next(os.walk(tmpdir))[1])
     current_dir.remove(output_dir_name)
+    # if the pictures are at the root of the zip, we create the directory ourselves
+    # and move the pictures there
+    if current_dir == []:
+        new_dir, _ = os.path.splitext(file)
+        os.mkdir(tmpdir + '/' + new_dir)
+        current_dir = [new_dir]
+        for file in next(os.walk(tmpdir))[2]:
+            move(tmpdir + '/' + file, tmpdir + '/' + current_dir[0] + '/' + file)
     current_dir = current_dir[0]
     work_dir = tmpdir + "/" + current_dir
     # rename the images
