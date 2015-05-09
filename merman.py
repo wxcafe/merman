@@ -26,13 +26,13 @@ for file in sys.argv:
         output_file.append(file)
 
 if not output_file:
-    print "The output file could not be found, most likely because it already exists"
+    print "The output file was not specified, most likely reason is that it already exists"
     sys.exit(1)
 
 # initialize variables
 index = 1
 tmpdir = mkdtemp()
-output_dir_name, _ = os.path.splitext(output_file)
+output_dir_name, _ = os.path.splitext(output_file[0])
 output_dir = tmpdir + "/" + output_dir_name
 os.mkdir(output_dir)
 os.listdir(output_dir)
@@ -70,7 +70,7 @@ except OSError:
     sys.exit(1)
 
 # create the output zip
-zout = zipfile.ZipFile(output_file, 'w', zipfile.ZIP_DEFLATED)
+zout = zipfile.ZipFile(output_file[0], 'w', zipfile.ZIP_DEFLATED)
 for r, d, f in os.walk(output_dir_name):
     for file in f:
         zout.write(os.path.join(r, file))
@@ -84,6 +84,6 @@ except OSError:
     sys.exit(1)
 
 # move it to cwd and exit
-move(tmpdir + "/" + output_file, "./" + output_file)
+move(tmpdir + "/" + output_file[0], "./" + output_file[0])
 clean(tmpdir)
 sys.exit(0)
