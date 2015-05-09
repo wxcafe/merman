@@ -17,13 +17,15 @@ if sys.argv[1] == '-h':
 
 # parse our arguments
 input_files = []
-output_file = []
+output_file = sys.argv.pop()
+del sys.argv[0]
 for file in sys.argv:
     if os.path.isfile(file):
         if zipfile.is_zipfile(file):
             input_files.append(file)
     else:
-        output_file.append(file)
+        print "The file {} is not a valid input file".format(file)
+        sys.exit(1)
 
 if not output_file:
     print "The output file was not specified, most likely reason is that it already exists"
@@ -32,7 +34,7 @@ if not output_file:
 # initialize variables
 index = 1
 tmpdir = mkdtemp()
-output_dir_name, _ = os.path.splitext(output_file[0])
+output_dir_name, _ = os.path.splitext(output_file)
 output_dir = tmpdir + "/" + output_dir_name
 os.mkdir(output_dir)
 os.listdir(output_dir)
@@ -70,7 +72,7 @@ except OSError:
     sys.exit(1)
 
 # create the output zip
-zout = zipfile.ZipFile(output_file[0], 'w', zipfile.ZIP_DEFLATED)
+zout = zipfile.ZipFile(output_file, 'w', zipfile.ZIP_DEFLATED)
 for r, d, f in os.walk(output_dir_name):
     for file in f:
         zout.write(os.path.join(r, file))
@@ -84,6 +86,6 @@ except OSError:
     sys.exit(1)
 
 # move it to cwd and exit
-move(tmpdir + "/" + output_file[0], "./" + output_file[0])
+move(tmpdir + "/" + output_file, current_path + "/" + output_file)
 clean(tmpdir)
 sys.exit(0)
