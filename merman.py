@@ -27,8 +27,8 @@ for file in sys.argv:
         print "The file {} is not a valid input file".format(file)
         sys.exit(1)
 
-if not output_file:
-    print "The output file was not specified, most likely reason is that it already exists"
+if os.path.isfile(os.getcwd() + "/" + output_file):
+    print "The output file already exists"
     sys.exit(1)
 
 # initialize variables
@@ -53,8 +53,6 @@ for file in input_files:
         sys.exit(1)
     current_dir = sorted(next(os.walk(tmpdir))[1])
     current_dir.remove(output_dir_name)
-    # if the pictures are at the root of the zip, we create the directory ourselves
-    # and move the pictures there
     if current_dir == []:
         new_dir, _ = os.path.splitext(file)
         os.mkdir(tmpdir + '/' + new_dir)
