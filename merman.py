@@ -5,8 +5,9 @@ from tempfile import mkdtemp
 from shutil import rmtree, move
 import zipfile
 
-def clean(dir):
-    rmtree(dir)
+
+def clean(directory):
+    rmtree(directory)
 
 # help
 if sys.argv[1] == '-h':
@@ -19,16 +20,16 @@ if sys.argv[1] == '-h':
 input_files = []
 output_file = sys.argv.pop()
 del sys.argv[0]
-for file in sys.argv:
-    if os.path.isfile(file):
-        if zipfile.is_zipfile(file):
-            input_files.append(file)
+for arg in sys.argv:
+    if os.path.isfile(arg):
+        if zipfile.is_zipfile(arg):
+            input_files.append(arg)
     else:
-        print "The file {} is not a valid input file".format(file)
+        print "The file {} is not a valid input file".format(arg)
         sys.exit(1)
 
-if not output_file:
-    print "The output file was not specified, most likely reason is that it already exists"
+if os.path.isfile(os.getcwd() + "/" + output_file):
+    print "The output file already exists"
     sys.exit(1)
 
 # initialize variables
@@ -40,33 +41,33 @@ os.mkdir(output_dir)
 os.listdir(output_dir)
 
 # do the actual work
-for file in input_files:
+for zip_file in input_files:
     # unzip the file
     try:
-        fp = open(file, 'rb')
+        fp = open(zip_file, 'rb')
         fz = zipfile.ZipFile(fp)
         for name in fz.namelist():
             fz.extract(name, tmpdir)
-    except:
-        print "The file {} is not a valid zip file".format(file)
+    except all:
+        print 'The file {} is not a valid zip file'.format(zip_file)
         clean(tmpdir)
         sys.exit(1)
     current_dir = sorted(next(os.walk(tmpdir))[1])
     current_dir.remove(output_dir_name)
-    # if the pictures are at the root of the zip, we create the directory ourselves
-    # and move the pictures there
-    if current_dir == []:
-        new_dir, _ = os.path.splitext(file)
+    if not current_dir:
+        new_dir, _ = os.path.splitext(zip_file)
+        del _
         os.mkdir(tmpdir + '/' + new_dir)
         current_dir = [new_dir]
-        for file in next(os.walk(tmpdir))[2]:
-            move(tmpdir + '/' + file, tmpdir + '/' + current_dir[0] + '/' + file)
+        for image_file in next(os.walk(tmpdir))[2]:
+            move(tmpdir + '/' + image_file, tmpdir + '/' + current_dir[0] + '/' + image_file)
     current_dir = current_dir[0]
     work_dir = tmpdir + "/" + current_dir
     # rename the images
-    for file in sorted(os.listdir(work_dir)):
-        _, ext = os.path.splitext(file)
-        os.rename(work_dir + "/" + file, output_dir + "/" + str(index).zfill(6) + ext)
+    for image_file in sorted(os.listdir(work_dir)):
+        _, ext = os.path.splitext(image_file)
+        del _
+        os.rename(work_dir + "/" + image_file, output_dir + "/" + str(index).zfill(6) + ext)
         index += 1
     # delete the directory
     rmtree(work_dir)
@@ -82,8 +83,8 @@ except OSError:
 # create the output zip
 zout = zipfile.ZipFile(output_file, 'w', zipfile.ZIP_DEFLATED)
 for r, d, f in os.walk(output_dir_name):
-    for file in f:
-        zout.write(os.path.join(r, file))
+    for image_file in f:
+        zout.write(os.path.join(r, image_file))
 zout.close()
 
 # go back to cwd
