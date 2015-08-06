@@ -5,9 +5,6 @@ from tempfile import mkdtemp
 from shutil import rmtree, move
 import zipfile
 
-def clean(dir):
-    rmtree(dir)
-
 def clean(directory):
     rmtree(directory)
 
