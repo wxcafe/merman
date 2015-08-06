@@ -9,7 +9,7 @@ def clean(directory):
     rmtree(directory)
 
 # help
-if len(sys.argv) == 0 || sys.argv[1] == '-h':
+if len(sys.argv) == 1 || sys.argv[1] == '-h':
     print "usage : merman.py file1.zip file2.zip [file3.zip, ...] ouput.zip"
     print "      converts all .zip manga files given in argument to a single one"
     print "      by appending to the first one the pictures of the others"
